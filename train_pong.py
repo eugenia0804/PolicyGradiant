@@ -14,7 +14,7 @@ policy_lr = 1e-3
 gamma = 0.99 # Discount factor
 training_episodes = 3000
 hidden_dim = 128 # Number of hidden units in policy network
-cuda = 1 
+cuda = 1
 basline = True # Use baseline for variance reduction
 baseline_window = 200 # Moving average window for baseline
 
@@ -53,35 +53,35 @@ def preprocess_obs(obs):
 def action_map(idx):
     return [2, 3][idx] 
 
-# Train policy
-policy, rewards = train_policy(
-    env=env,
-    device=device,
-    obs_dim=obs_dim,
-    act_dim=act_dim,
-    preprocess_obs=preprocess_obs,
-    action_map=action_map,
-    policy_lr=policy_lr,
-    gamma=gamma,
-    training_episodes=training_episodes,
-    hidden_dim=hidden_dim,
-    baseline=basline,
-    baseline_window=baseline_window
-)
+# # Train policy
+# policy, rewards = train_policy(
+#     env=env,
+#     device=device,
+#     obs_dim=obs_dim,
+#     act_dim=act_dim,
+#     preprocess_obs=preprocess_obs,
+#     action_map=action_map,
+#     policy_lr=policy_lr,
+#     gamma=gamma,
+#     training_episodes=training_episodes,
+#     hidden_dim=hidden_dim,
+#     baseline=basline,
+#     baseline_window=baseline_window
+# )
 
-# Save model and rewards
-torch.save(policy.state_dict(), model_path)
-torch.save(rewards, rewards_path)
+# # Save model and rewards
+# torch.save(policy.state_dict(), model_path)
+# torch.save(rewards, rewards_path)
 
-print("\nTraining completed successfully!")
-print(f"Model saved to: {model_path}")
-print(f"Rewards saved to: {rewards_path}")
-print(f"Full logs at: {log_path}")
+# print("\nTraining completed successfully!")
+# print(f"Model saved to: {model_path}")
+# print(f"Rewards saved to: {rewards_path}")
+# print(f"Full logs at: {log_path}")
 
 
 # Rollout trained policy
-trained_policy = PolicyNetwork(obs_dim, hidden_dim=64, act_dim=2).to(device)
-trained_policy.load_state_dict(torch.load("runs/pong_lr0.001_g0.99_ep1000_h64_20251014_211038/policy.pt", map_location=device))
+trained_policy = PolicyNetwork(obs_dim, hidden_dim=hidden_dim, act_dim=2).to(device)
+trained_policy.load_state_dict(torch.load(model_path, map_location=device))
 rollout_rewards = rollout_policy(env, policy=trained_policy, device=device, episodes=500, preprocess_obs=preprocess_obs, action_map=action_map)
 
 # Save rollout rewards
